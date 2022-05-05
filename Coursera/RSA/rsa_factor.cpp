@@ -1,7 +1,7 @@
 /* 
  * A toy program to compute RSA factorization.
  * Compile with
- * clang++ -std=c++17 main.cpp -lgmp -lgmpxx -o main.o
+ * clang++ -std=c++17 rsa_factor.cpp -lgmp -lgmpxx -o rsa_factor.o
  */
 
 #include <iostream>
@@ -81,18 +81,14 @@ mpz_class factor_with_hint(
         x = A*A - N1;
         if (x < 0) continue; // possible only at the first iteration
         mpz_sqrt(x.get_mpz_t(), x.get_mpz_t());
-        x -= 2;
-        // handle lost of precision
-        for (int j = 0; j <= 5; j++, x++) {
-            d = A+x;
-            if (N1 % d == 0) {
-                if (d % a == 0) d /= a;
-                if (d % b == 0) d /= b;
-                if (d % 2 == 0) d /= 2;
-                if (d % 2 == 0) d /= 2;
-                std::cout << "DONE" << std::endl;
-                return smallest_divisor(N, d);
-            }
+        d = A+x;
+        if (N1 % d == 0) {
+            if (d % a == 0) d /= a;
+            if (d % b == 0) d /= b;
+            if (d % 4 == 0) d /= 4;
+            if (d % 2 == 0) d /= 2;
+            std::cout << "DONE" << std::endl;
+            return smallest_divisor(N, d);
         }
     }
     std::cout << "Failed to find a divisor" << std::endl;
